@@ -1,0 +1,13 @@
+[ignore]
+.*/src/features/ReferenceGenome.js
+.*.test.js
+
+[include]
+
+[libs]
+
+[lints]
+
+[options]
+
+[strict]
