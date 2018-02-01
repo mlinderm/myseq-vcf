@@ -1,13 +1,17 @@
 {
   "name": "myseq-vcf",
   "version": "1.0.0",
-  "description": "",
   "main": "index.js",
   "scripts": {
     "test": "jest"
   },
-  "keywords": ["myseq", "genomics", "VCF"],
+  "keywords": [
+    "myseq",
+    "genomics",
+    "VCF"
+  ],
   "author": "Michael Linderman <mlinderman@middlebury.edu>",
+  "contributors": ["Leo McElroy <lmcelroy@middlebury.edu>"],
   "license": "Apache-2.0",
   "browser": {
     "./src/io/FileReaders.js": "./src/io/FileReaders-browser.js"
@@ -39,5 +43,14 @@
     "setupFiles": [
       "./setupJest.js"
     ]
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mlinderm/myseq-vcf.git"
+  },
+  "bugs": {
+    "url": "https://github.com/mlinderm/myseq-vcf/issues"
+  },
+  "homepage": "https://github.com/mlinderm/myseq-vcf#readme",
+  "description": "Query local or remote Tabix-indexed VCFs by genomic position"
 }
