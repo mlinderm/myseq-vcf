@@ -35,7 +35,6 @@ class VCFSource {
       const refIdx = findIndex(headerLines, line => line.startsWith('##reference='));
       if (refIdx !== -1) {
         // Do we know this reference file?
-        // index after '=' in REFERENCE=
         const referenceFrom = Ref.referenceFromFile(headerLines[refIdx].substring(12));
         if (referenceFrom !== undefined) {
           referenceResolver.resolve(referenceFrom);
@@ -76,6 +75,13 @@ class VCFSource {
     return this._samples;
   }
 
+  /**
+   * Query for variants overlapping genomic region
+   * @param  {string} ctg Contig
+   * @param  {number} pos Inclusive start of genomic region
+   * @param  {number} end Inclusive end of genomic region
+   * @return {Promise<Array<VCFVariant>>}     Array of VCFVariants overlapping region
+   */
   variants(ctg: string, pos: number, end: number): Promise<Array<VCFVariant>> {
     const queryResults = this._reference
       .then(ref => ref.normalizeContig(ctg))
@@ -99,6 +105,16 @@ class VCFSource {
     });
   }
 
+  /**
+   * Query for single variant
+   * @param  {string} ctg          Contig
+   * @param  {number} pos          VCF position
+   * @param  {string} ref          Reference allele
+   * @param  {string} alt          Alternate allele
+   * @param  {boolean} assumeRefRef If variant not found, synthesize variant with REF/REF genotype
+   * @return {Promise<VCFVariant>}  Found (or synthetic) variant or undefined if
+   * assumeRefRef is false and variant is not found
+   */
   variant(
     ctg: string,
     pos: number,
@@ -114,7 +130,8 @@ class VCFSource {
         .shift();
       if (!foundVariant && assumeRefRef) {
         return this._synthVariant(ctg, pos, ref, alt);
-      } return foundVariant;
+      }
+      return foundVariant;
     });
   }
 }

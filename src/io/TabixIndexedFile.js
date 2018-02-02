@@ -248,6 +248,9 @@ function advanceToEndOfBGZFBlock(view: jDataView) {
       view.skip(view.getUint16()); // Skip extra field
     }
   }
+  if (bsize === undefined) {
+    throw new Error('Unable to determine block size');
+  }
 
   view.skip((bsize - xlen - 19) + 4); // To start of ISIZE
   return { csize: bsize, usize: view.getUint32() };
@@ -447,8 +450,8 @@ class TabixIndexedFile {
         const uBuffer = inflateGZip(buffer, 0 /* Read single block */);
         const uView = new Uint8Array(uBuffer, 0, uBuffer.byteLength);
 
-        const decoder = new TextDecoder('utf-8'); // Tabix'd files are ASCII
-        const lines = decoder.decode(uView).split('\n');
+        const decoder = new TextDecoder('utf-8'); // VCF 4.3 allows UTF characters
+        const lines = decoder.decode(uView).split(/\r?\n/); // VCF 4.3 allows LF or CRLF
 
         const last = findLastIndex(lines, line => line.startsWith(comment));
         if (last === (lines.length - 1)) {
@@ -490,7 +493,7 @@ class TabixIndexedFile {
           const uBuffer = inflateGZip(buffer, chunk.end.coffset /* Start of last block */);
           const uView = new Uint8Array(uBuffer, uOffset, uBytes);
 
-          return decoder.decode(uView).split('\n')
+          return decoder.decode(uView).split(/\r?\n/) // VCF 4.3 allows LF or CRLF
             .filter(line => line.length > 0 && overlapFunction(line, ctg, pos, end));
         });
       })).then(lines => lines.reduce((acc, cur) => acc.concat(cur), []));

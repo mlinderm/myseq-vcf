@@ -1,7 +1,7 @@
 /**
  * @flow
  */
-function ContigNotInIndexError(message) {
+function ContigNotInIndexError(message: ?string) {
   this.name = 'ContigNotInIndexError';
   this.message = message || this.name;
   this.stack = (new Error()).stack;

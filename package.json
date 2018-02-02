@@ -3,7 +3,11 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "test": "jest"
+    "build": "browserify -t [ babelify ] -o build/myseq-vcf.js --standalone myseq src/myseq-vcf.js",
+    "test": "jest src/**/*.test.js",
+    "pretest:browser": "npm run build",
+    "test:browser": "karma start karma.conf.js",
+    "lint": "eslint ."
   },
   "keywords": [
     "myseq",
@@ -11,7 +15,9 @@
     "VCF"
   ],
   "author": "Michael Linderman <mlinderman@middlebury.edu>",
-  "contributors": ["Leo McElroy <lmcelroy@middlebury.edu>"],
+  "contributors": [
+    "Leo McElroy <lmcelroy@middlebury.edu>"
+  ],
   "license": "Apache-2.0",
   "browser": {
     "./src/io/FileReaders.js": "./src/io/FileReaders-browser.js"
@@ -21,13 +27,22 @@
     "babel-jest": "^22.1.0",
     "babel-preset-env": "^1.6.1",
     "babel-preset-flow": "^6.23.0",
+    "babelify": "^8.0.0",
+    "browserify": "^15.2.0",
+    "chai": "^4.1.2",
     "eslint": "^4.16.0",
     "eslint-config-airbnb-base": "^12.1.0",
     "eslint-plugin-flowtype": "^2.42.0",
     "eslint-plugin-import": "^2.8.0",
     "flow-bin": "^0.64.0",
     "jest": "^22.1.4",
-    "jest-fetch-mock": "^1.4.1"
+    "jest-fetch-mock": "^1.4.1",
+    "karma": "^2.0.0",
+    "karma-chai": "^0.1.0",
+    "karma-chrome-launcher": "^2.2.0",
+    "karma-mocha": "^1.3.0",
+    "karma-mocha-reporter": "^2.2.5",
+    "mocha": "^5.0.0"
   },
   "dependencies": {
     "jbinary": "^2.1.3",

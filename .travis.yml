@@ -1,0 +1,15 @@
+language: node_js
+node_js:
+  - "lts/carbon"
+sudo: false
+addons:
+  chrome: stable
+install:
+    - npm install
+cache:
+  directories:
+    - node_modules
+script:
+  - npm run lint
+  - npm run test
+  - npm run test:browser
