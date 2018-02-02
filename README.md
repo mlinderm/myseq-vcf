@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/mlinderm/myseq-vcf.svg?branch=master)](https://travis-ci.org/mlinderm/myseq-vcf)
+
 # MySeq-VCF
 
 myseq-vcf is a browser and node-compatible library for querying [Tabix-indexed](http://www.htslib.org/doc/tabix.html) [VCF](https://samtools.github.io/hts-specs/) files by genomic coordinates. Both local and remote files are supported. Queries will only request the necessary blocks of the bgzip-compressed VCF file, enabling efficient targeted analysis of whole-genome-scale VCF files.
