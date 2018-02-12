@@ -1,6 +1,5 @@
 /**
  * @flow
- * @jest-environment node
  */
 const fs = require('fs');
 const fetch = require('node-fetch');
@@ -36,14 +35,17 @@ class LocalFileReader extends AbstractFileReader {
   }
 }
 
-// Once response.arrayBuffer is available in node-fetch we could potentially
-// DRY up the RemoteFileReader
+type FetchType = (url: string | Request, init?: RequestInit) => Promise<Response>;
+
 class RemoteFileReader extends AbstractFileReader {
   url: string;
+  myFetch: FetchType;
 
-  constructor(url: string) {
+  // Enable fetch to be replaced to facilitate unit testing
+  constructor(url: string, myFetch?: FetchType) {
     super();
     this.url = url;
+    this.myFetch = myFetch || fetch;
   }
 
   bytes(start: number = 0, length?: number): Promise<ArrayBuffer> {
@@ -58,12 +60,12 @@ class RemoteFileReader extends AbstractFileReader {
       };
     }
 
-    return fetch(this.url, options).then((response) => {
+    return this.myFetch(this.url, options).then((response) => {
       if (response.ok) {
-        return response.buffer();
+        return response.arrayBuffer();
       }
       throw new Error('Bad response from server');
-    }).then(buffer => bufferToArrayBufferSlice(buffer));
+    });
   }
 }
 
