@@ -2,7 +2,8 @@
  * @flow
  */
 const fs = require('fs');
-const fetch = require('node-fetch');
+const http = require('http');
+const URL = require('url');
 const AbstractFileReader = require('./AbstractFileReader');
 
 function bufferToArrayBufferSlice(buffer: Buffer, bytes?: number) {
@@ -35,23 +36,16 @@ class LocalFileReader extends AbstractFileReader {
   }
 }
 
-type FetchType = (url: string | Request, init?: RequestInit) => Promise<Response>;
-
 class RemoteFileReader extends AbstractFileReader {
-  url: string;
-  myFetch: FetchType;
+  url: Object;
 
-  // Enable fetch to be replaced to facilitate unit testing
-  constructor(url: string, myFetch?: FetchType) {
+  constructor(url: string) {
     super();
-    this.url = url;
-    this.myFetch = myFetch || fetch;
+    this.url = URL.parse(url);
   }
 
   bytes(start: number = 0, length?: number): Promise<ArrayBuffer> {
-    const options = {
-      method: 'GET',
-    };
+    const options = Object.assign({}, this.url, { method: 'GET' });
 
     if (start !== 0 || length !== undefined) {
       // Requesting only a portion of the file
@@ -60,11 +54,20 @@ class RemoteFileReader extends AbstractFileReader {
       };
     }
 
-    return this.myFetch(this.url, options).then((response) => {
-      if (response.ok) {
-        return response.arrayBuffer();
-      }
-      throw new Error('Bad response from server');
+    return new Promise((resolve, reject) => {
+      const req = http.request(options, (res) => {
+        const data = [];
+        res.on('data', (chunk) => {
+          data.push(chunk);
+        }).on('end', () => {
+          const buffer = Buffer.concat(data);
+          resolve(bufferToArrayBufferSlice(buffer));
+        });
+      });
+      req.on('error', (e) => {
+        reject(new Error(`RemoteFileRequest failed: ${e.message}`));
+      });
+      req.end();
     });
   }
 }

@@ -1,6 +1,6 @@
 const chai = require('chai');
 const chaiAsPromised = require('chai-as-promised');
-const fetchMock = require('fetch-mock');
+const nock = require('nock');
 const fs = require('fs');
 const { LocalFileReader, RemoteFileReader } = require('./FileReaders');
 
@@ -28,34 +28,54 @@ describe('LocalFileReader', () => {
 
 
 describe('RemoteFileReader', () => {
-  it('should read specific bytes', () => {
-    const url = '/test-data/single_sample.vcf.gz.tbi.uncompressed';
-    const contents = Buffer.from([0x42, 0x49, 0x01, 0x01]);
-    const mock = fetchMock.sandbox().get(url, {
-      sendAsJson: false,
-      body: contents,
-    });
+  beforeEach(() => {
+    nock.cleanAll();
+  });
 
-    const reader = new RemoteFileReader(url, mock);
+  it('should read specific bytes', () => {
+    const url = 'http://example.com/single_sample.vcf.gz.tbi.uncompressed';
+    const contents = Buffer.from([0x42, 0x49, 0x01, 0x01]);
+    const index = nock('http://example.com', {
+      reqheaders: { range: 'bytes=1-4' },
+    })
+      .get('/single_sample.vcf.gz.tbi.uncompressed')
+      .reply(200, contents);
+
+    const reader = new RemoteFileReader(url);
     return reader.bytes(1, 4).then((buffer) => {
-      expect(mock.called(url, 'GET')).to.equal(true);
-      expect(mock.lastOptions(url, 'GET')).to.deep.equal({ method: 'GET', headers: { Range: 'bytes=1-4' } });
       expect(Buffer.compare(Buffer.from(buffer), contents)).to.equal(0);
+      index.done();
+    });
+  });
+
+  it('should read specific bytes from start to end of file', () => {
+    const url = 'http://example.com/single_sample.vcf.gz.tbi.uncompressed';
+    const contents = fs.readFileSync('./test-data/single_sample.vcf.gz.tbi.uncompressed').slice(1);
+    const index = nock('http://example.com', {
+      reqheaders: { range: 'bytes=1-' },
+    })
+      .get('/single_sample.vcf.gz.tbi.uncompressed')
+      .reply(200, contents);
+
+    const reader = new RemoteFileReader(url);
+    return reader.bytes(1).then((buffer) => {
+      expect(Buffer.compare(Buffer.from(buffer), contents)).to.equal(0);
+      index.done();
     });
   });
 
   it('should read entire file', () => {
-    const url = '/test-data/single_sample.vcf.gz.tbi.uncompressed';
-    const contents = fs.readFileSync('./test-data/single_sample.vcf.gz.tbi.uncompressed');
-    const mock = fetchMock.sandbox().get(url, {
-      sendAsJson: false,
-      body: contents,
-    });
+    const url = 'http://example.com/single_sample.vcf.gz.tbi.uncompressed';
+    const file = './test-data/single_sample.vcf.gz.tbi.uncompressed';
+    const contents = fs.readFileSync(file);
+    const index = nock('http://example.com')
+      .get('/single_sample.vcf.gz.tbi.uncompressed')
+      .replyWithFile(200, file);
 
-    const reader = new RemoteFileReader(url, mock);
+    const reader = new RemoteFileReader(url);
     return reader.bytes().then((buffer) => {
-      expect(mock.called(url, 'GET')).to.equal(true);
       expect(Buffer.compare(Buffer.from(buffer), contents)).to.equal(0);
+      index.done();
     });
   });
 });
