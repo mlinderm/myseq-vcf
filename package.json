@@ -1,14 +1,18 @@
 {
   "name": "myseq-vcf",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "lib/myseq-vcf.js",
   "scripts": {
-    "build": "browserify -t [ babelify ] -o build/myseq-vcf.js --standalone myseq src/myseq-vcf.js",
-    "test": "mocha --require babel-core/register src/**/*.test.js",
-    "pretest:browser": "npm run build",
+    "build": "browserify -t [ babelify ] -o dist/myseq-vcf.js --standalone myseq src/myseq-vcf.js",
+    "test": "BABEL_ENV=test mocha --require babel-core/register src/**/*.test.js",
+    "pretest:browser": "BABEL_ENV=test npm run build",
     "test:browser": "karma start karma.conf.js",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "prepack": "babel src/ -d lib --ignore test.js"
   },
+  "files": [
+    "lib"
+  ],
   "keywords": [
     "myseq",
     "genomics",
@@ -20,9 +24,11 @@
   ],
   "license": "Apache-2.0",
   "browser": {
-    "./src/io/FileReaders.js": "./src/io/FileReaders-browser.js"
+    "./src/io/FileReaders.js": "./src/io/FileReaders-browser.js",
+    "./lib/io/FileReaders.js": "./lib/io/FileReaders-browser.js"
   },
   "devDependencies": {
+    "babel-cli": "^6.26.0",
     "babel-core": "^6.26.0",
     "babel-eslint": "^8.2.1",
     "babel-preset-env": "^1.6.1",

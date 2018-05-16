@@ -1,5 +1,11 @@
 {
+  "env": {
+    "test": {
+      "presets": ["flow"]
+    }
+  },
   "presets": [
-    "flow"
+    "flow",
+    ["env", { "targets": { "uglify": true } }],
   ]
 }

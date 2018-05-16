@@ -1,2 +1,3 @@
 # Production
-/build
+/dist
+/lib

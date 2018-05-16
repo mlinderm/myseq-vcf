@@ -3,7 +3,7 @@ module.exports = function(config) {
   config.set({
     frameworks: ['mocha', 'chai'],
     files: [
-      'build/myseq-vcf.js',
+      'dist/myseq-vcf.js',
       'test/**/*.test.js',
       { pattern: 'test-data/*', watched: false, included: false, served: true, nocache: false }
     ],
