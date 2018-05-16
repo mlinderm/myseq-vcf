@@ -1,11 +1,7 @@
 {
-  "env": {
-    "test": {
-      "presets": ["flow"]
-    }
-  },
   "presets": [
     "flow",
-    ["env", { "targets": { "uglify": true } }],
-  ]
+    ["env", { "targets": { "uglify": true } }]
+  ],
+  "plugins": ["transform-class-properties"]
 }

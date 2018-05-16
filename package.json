@@ -4,14 +4,15 @@
   "main": "lib/myseq-vcf.js",
   "scripts": {
     "build": "browserify -t [ babelify ] -o dist/myseq-vcf.js --standalone myseq src/myseq-vcf.js",
-    "test": "BABEL_ENV=test mocha --require babel-core/register src/**/*.test.js",
-    "pretest:browser": "BABEL_ENV=test npm run build",
+    "test": "mocha --require babel-core/register src/**/*.test.js",
+    "pretest:browser": "npm run build",
     "test:browser": "karma start karma.conf.js",
     "lint": "eslint .",
-    "prepack": "babel src/ -d lib --ignore test.js"
+    "prepare": "babel src/ -d lib --ignore test.js"
   },
   "files": [
-    "lib"
+    "lib",
+    "dist"
   ],
   "keywords": [
     "myseq",
@@ -31,6 +32,7 @@
     "babel-cli": "^6.26.0",
     "babel-core": "^6.26.0",
     "babel-eslint": "^8.2.1",
+    "babel-plugin-transform-class-properties": "^6.24.1",
     "babel-preset-env": "^1.6.1",
     "babel-preset-flow": "^6.23.0",
     "babelify": "^8.0.0",
