@@ -20,11 +20,14 @@ class VCFVariant {
     this.isSynth = isSynth;
 
     const fields = this._line.split('\t', samples.length > 0 ? samples.length + 9 : 8);
-    this.contig = (fields[0].slice(0, 3) === 'chr') ? fields[0] : `chr${fields[0]}`; // this is incase the vcf is missing chr
+    this.contig = (fields[0].slice(0, 3) === 'chr') ? fields[0] : `chr${fields[0]}`; // this is inncase the vcf is missing chr
     this.position = Number(fields[1]);
     this.ids = fields[2].split(';');
     this.ref = fields[3]; // eslint-disable-line prefer-destructuring
     this.alt = fields[4].split(',');
+
+    const filter = fields[6];
+    this.filter = (filter === '.' || filter === '') ? undefined : filter.split(';');
 
     // Parse genotypes
     this._genotypes = new Map();
@@ -52,6 +55,17 @@ class VCFVariant {
   toString(): string {
     return `${this.contig}:${this.position}${this.ref}>${this.alt.join(',')}`;
   }
+
+  toHgvs(): string {
+    if (this.alt.length > 1) {
+      throw new Error('HGVS only supported for bi-allelic variants');
+    }
+    // TODO: Handle other variant types
+    return `${this.contig}:g.${this.position}${this.ref}>${this.alt[0]}`;
+  }
+
+  isPASS() { return this.filter && this.filter.length === 1 && this.filter[0] === 'PASS'; }
+  isFILTER() { return this.filter && this.filter.length >= 1 && this.filter[0] !== 'PASS'; }
 
   /**
    * If no sample is specified, return the 1st genotype
