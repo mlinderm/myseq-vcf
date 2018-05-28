@@ -64,8 +64,8 @@ class VCFVariant {
     return `${this.contig}:g.${this.position}${this.ref}>${this.alt[0]}`;
   }
 
-  isPASS() { return this.filter && this.filter.length === 1 && this.filter[0] === 'PASS'; }
-  isFILTER() { return this.filter && this.filter.length >= 1 && this.filter[0] !== 'PASS'; }
+  isPASS() { return this.filter ? this.filter.length === 1 && this.filter[0] === 'PASS' : false; }
+  isFILTER() { return this.filter ? this.filter.length >= 1 && this.filter[0] !== 'PASS' : false; }
 
   /**
    * If no sample is specified, return the 1st genotype
