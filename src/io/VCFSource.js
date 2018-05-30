@@ -76,6 +76,15 @@ class VCFSource {
   }
 
   /**
+   * Normalize contig naming based on actual reference for source
+   * @param  {string} ctg Contig
+   * @return {Promise<string>}     Normalized contig name
+   */
+  normalizeContig(ctg: string): Promise<string> {
+    return this._reference.then(ref => ref.normalizeContig(ctg));
+  }
+
+  /**
    * Query for variants overlapping genomic region
    * @param  {string} ctg Contig
    * @param  {number} pos Inclusive start of genomic region

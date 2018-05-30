@@ -20,9 +20,10 @@ class VCFVariant {
     this.isSynth = isSynth;
 
     const fields = this._line.split('\t', samples.length > 0 ? samples.length + 9 : 8);
-    this.contig = (fields[0].slice(0, 3) === 'chr') ? fields[0] : `chr${fields[0]}`; // this is inncase the vcf is missing chr
-    this.position = Number(fields[1]);
-    this.ids = fields[2].split(';');
+    this.contig = fields[0]; // eslint-disable-line prefer-destructuring
+    this.position = parseInt(fields[1], 10);
+    const id = fields[2];
+    this.ids = (id === '.') ? undefined : id.split(';');
     this.ref = fields[3]; // eslint-disable-line prefer-destructuring
     this.alt = fields[4].split(',');
 
