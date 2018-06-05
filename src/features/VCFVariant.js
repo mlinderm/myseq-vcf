@@ -11,7 +11,8 @@ class VCFVariant {
   ref: string;
   alt: Array<string>;
 
-  ids: Array<string>;
+  id: ?Array<string>;
+  filter: ?Array<string>;
 
   _genotypes: Map<string, string>;
 
@@ -23,7 +24,7 @@ class VCFVariant {
     this.contig = fields[0]; // eslint-disable-line prefer-destructuring
     this.position = parseInt(fields[1], 10);
     const id = fields[2];
-    this.ids = (id === '.') ? undefined : id.split(';');
+    this.id = (id === '.') ? undefined : id.split(';');
     this.ref = fields[3]; // eslint-disable-line prefer-destructuring
     this.alt = fields[4].split(',');
 
@@ -65,8 +66,8 @@ class VCFVariant {
     return `${this.contig}:g.${this.position}${this.ref}>${this.alt[0]}`;
   }
 
-  isPASS() { return this.filter ? this.filter.length === 1 && this.filter[0] === 'PASS' : false; }
-  isFILTER() { return this.filter ? this.filter.length >= 1 && this.filter[0] !== 'PASS' : false; }
+  isPASS(): boolean { return this.filter ? this.filter.length === 1 && this.filter[0] === 'PASS' : false; }
+  isFILTER(): boolean { return this.filter ? this.filter.length >= 1 && this.filter[0] !== 'PASS' : false; }
 
   /**
    * If no sample is specified, return the 1st genotype

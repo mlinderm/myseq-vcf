@@ -1,7 +1,7 @@
 /**
  * @flow
  */
-/* eslint-disable no-underscore-dangle, no-unused-expressions */
+/* eslint-disable no-underscore-dangle, no-unused-expressions, arrow-body-style */
 const chai = require('chai');
 const chaiAsPromised = require('chai-as-promised');
 
@@ -131,6 +131,55 @@ describe('VCFSource', () => {
       expect(variant).not.to.be.undefined;
       expect(variant.isSynth).to.equal(true);
       expect(variant.toString()).to.equal('chr7:141672604T>C');
+    });
+  });
+
+  describe('region normalization', () => {
+    let source;
+    beforeEach(() => {
+      source = getTestSource();
+    });
+
+    it('should normalize single string region', () => {
+      return source.normalizeRegions('chr7:1-2').then((region) => {
+        expect(region).to.deep.equal({ ctg: 'chr7', pos: 1, end: 2 });
+      });
+    });
+
+    it('should add end to single string region', () => {
+      return source.normalizeRegions('chr7:1').then((region) => {
+        expect(region).to.deep.equal({ ctg: 'chr7', pos: 1, end: 1 });
+      });
+    });
+
+    it('should normalize contig', () => {
+      return source.normalizeRegions('7:1').then((region) => {
+        expect(region).to.deep.equal({ ctg: 'chr7', pos: 1, end: 1 });
+      });
+    });
+
+    it('should normalize array of string regions', () => {
+      return source.normalizeRegions(['7:1']).then((region) => {
+        expect(region).to.deep.equal([{ ctg: 'chr7', pos: 1, end: 1 }]);
+      });
+    });
+
+    it('should sort and merge overlapping regions', () => {
+      return source.normalizeRegions(['7:3-10', '7:1-2', '7:2-7']).then((region) => {
+        expect(region).to.deep.equal([{ ctg: 'chr7', pos: 1, end: 10 }]);
+      });
+    });
+
+    it('should not merge non-overlapping regions', () => {
+      return source.normalizeRegions(['7:3-10', '8:1-5']).then((region) => {
+        expect(region).to.deep.equal([{ ctg: 'chr7', pos: 3, end: 10 }, { ctg: 'chr8', pos: 1, end: 5 }]);
+      });
+    });
+
+    it('should merge exactly overlapping regions', () => {
+      return source.normalizeRegions(['7:3-3', '7:3-3']).then((region) => {
+        expect(region).to.deep.equal([{ ctg: 'chr7', pos: 3, end: 3 }]);
+      });
     });
   });
 });

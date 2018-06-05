@@ -3,12 +3,19 @@
  */
 const findIndex = require('lodash/findIndex');
 const last = require('lodash/last');
+const isString = require('lodash/isString');
 const defer = require('promise-defer');
 
 const { ContigNotInIndexError } = require('../util/Errors');
 const TabixIndexedFile = require('./TabixIndexedFile');
 const Ref = require('../features/ReferenceGenome');
 const VCFVariant = require('../features/VCFVariant');
+
+type Region = {
+  ctg: string;
+  pos: number;
+  end: number;
+}
 
 class VCFSource {
   _source: TabixIndexedFile;
@@ -45,7 +52,7 @@ class VCFSource {
       const contigs = headerLines
         .filter(line => line.startsWith('##contig='))
         .map(line => line.match(/ID=([^,>]+)/))
-        .filter(match => match !== null)
+        .filter(match => match && match.length === 2)
         .map(match => match[1]);
       if (contigs.length > 0) {
         const referenceFrom = Ref.referenceFromContigs(contigs);
@@ -76,12 +83,41 @@ class VCFSource {
   }
 
   /**
-   * Normalize contig naming based on actual reference for source
-   * @param  {string} ctg Contig
-   * @return {Promise<string>}     Normalized contig name
+   * Normalize (array of) string regions to objects describing the sorted non-overlapping
+   * regions.
+   * @param  {[type]} regionOrRegions (Array of) contig:pos-end region strings
+   * @return {Promise<Array<Region | Region>>} (Array of) region object with ctg, pos and end fields
    */
-  normalizeContig(ctg: string): Promise<string> {
-    return this._reference.then(ref => ref.normalizeContig(ctg));
+  normalizeRegions(regionOrRegions: string | Array<string>): Promise<Array<Region> | Region> {
+    if (Array.isArray(regionOrRegions)) {
+      return Promise.all(regionOrRegions.map(region => this.normalizeRegions(region)))
+        .then((regions) => {
+          regions.sort((aRegion, bRegion) => { // eslint-disable-line arrow-body-style
+            // TODO: Sort in reference order
+            return aRegion.ctg.localeCompare(bRegion.ctg) ||
+              (aRegion.pos - bRegion.pos) ||
+              (aRegion.end - bRegion.end);
+          });
+          // Merge overlapping regions
+          return regions.reduce((prev, curr) => {
+            if (prev.length) {
+              const tail = prev[prev.length - 1];
+              if (curr.ctg === tail.ctg && curr.pos >= tail.pos && curr.pos <= tail.end) {
+                tail.end = Math.max(tail.end, curr.end);
+                return prev;
+              }
+            }
+            prev.push(curr);
+            return prev;
+          }, []);
+        });
+    } else if (isString(regionOrRegions)) {
+      const [ctg, pos, end] = regionOrRegions.split(/[:-]/, 3);
+      return this._reference
+        .then(ref => ref.normalizeContig(ctg))
+        .then(normCtg => ({ ctg: normCtg, pos: parseInt(pos, 10), end: parseInt(end || pos, 10) }));
+    }
+    throw new Error('Invalid region(s)');
   }
 
   /**
