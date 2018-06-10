@@ -181,5 +181,14 @@ describe('VCFSource', () => {
         expect(region).to.deep.equal([{ ctg: 'chr7', pos: 3, end: 3 }]);
       });
     });
+
+    it('should sort contigs in reference order', () => {
+      return source.normalizeRegions(['13:3-3', '2:3-3', '13:3-5']).then((region) => {
+        expect(region).to.deep.equal([
+          { ctg: 'chr2', pos: 3, end: 3 },
+          { ctg: 'chr13', pos: 3, end: 5 },
+        ]);
+      });
+    });
   });
 });

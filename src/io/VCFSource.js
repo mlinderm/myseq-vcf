@@ -91,10 +91,11 @@ class VCFSource {
   normalizeRegions(regionOrRegions: string | Array<string>): Promise<Array<Region> | Region> {
     if (Array.isArray(regionOrRegions)) {
       return Promise.all(regionOrRegions.map(region => this.normalizeRegions(region)))
-        .then((regions) => {
+        .then(regions => Promise.all([regions, this._reference]))
+        .then(([regions, reference]) => {
           regions.sort((aRegion, bRegion) => { // eslint-disable-line arrow-body-style
-            // TODO: Sort in reference order
-            return aRegion.ctg.localeCompare(bRegion.ctg) ||
+            // Sort in reference order
+            return reference.compareContig(aRegion.ctg, bRegion.ctg) ||
               (aRegion.pos - bRegion.pos) ||
               (aRegion.end - bRegion.end);
           });
