@@ -55,12 +55,42 @@ class RemoteFileReader extends AbstractFileReader {
       };
     }
 
-    return fetch(this.url, options).then((response) => {
-      if (response.ok) {
-        return response.arrayBuffer();
-      }
-      throw new Error('Bad response from server');
+    // https://github.com/webtorrent/webtorrent/issues/1193
+    // Chrome will attempt to fulfill portions of a range request from the cache
+    // occasionally resulting a failed fetch. Automatically retry fetch once on
+    // an error while setting options to bypass the cache.
+    return new Promise((resolve, reject) => {
+      const wrappedFetch = (retry, addlOptions = {}) => {
+        fetch(this.url, Object.assign({}, options, addlOptions))
+          .then((response) => {
+            if (response.ok) {
+              resolve(response.arrayBuffer());
+            } else {
+              // Don't retry on HTTP error
+              reject(new Error('Bad response from server'));
+            }
+          })
+          .catch((error) => {
+            if (retry > 0) {
+              wrappedFetch(
+                retry - 1,
+                Object.assign({}, addlOptions, { cache: 'reload' }),
+              );
+            } else {
+              reject(error);
+            }
+          });
+      };
+      wrappedFetch(1);
     });
+
+
+    // return fetch(this.url, options).then((response) => {
+    //   if (response.ok) {
+    //     return response.arrayBuffer();
+    //   }
+    //   throw new Error('Bad response from server');
+    // });
   }
 }
 

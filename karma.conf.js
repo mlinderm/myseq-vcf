@@ -1,7 +1,7 @@
 /* eslint-disable */
 module.exports = function(config) {
   config.set({
-    frameworks: ['mocha', 'chai'],
+    frameworks: ['mocha', 'chai', 'sinon'],
     files: [
       'dist/myseq-vcf.js',
       'test/**/*.test.js',
