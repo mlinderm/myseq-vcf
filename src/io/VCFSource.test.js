@@ -49,7 +49,7 @@ describe('VCFSource', () => {
       expect(variant._line).to.equal('chr1\t100\trs1\tA\tT\t100.0\tPASS\tAC=1;AN=2\tGT\t0/1');
       expect(variant.isSynth).to.equal(false);
 
-      expect(variant.toString()).to.equal('chr1:100A>T');
+      expect(variant.toString()).to.equal('chr1:g.100A>T');
 
       expect(variant.contig).to.equal('chr1');
       expect(variant.position).to.equal(100);
@@ -112,7 +112,7 @@ describe('VCFSource', () => {
     return source.variant('chr1', 100, 'A', 'G', true).then((variant) => {
       expect(variant).not.to.be.undefined;
       expect(variant.isSynth).to.equal(true);
-      expect(variant.toString()).to.equal('chr1:100A>G');
+      expect(variant.toString()).to.equal('chr1:g.100A>G');
       expect(variant.genotype('NA12878')).to.equal('A/A');
     });
   });
@@ -130,7 +130,7 @@ describe('VCFSource', () => {
     return source.variant('7', 141672604, 'T', 'C', true).then((variant) => {
       expect(variant).not.to.be.undefined;
       expect(variant.isSynth).to.equal(true);
-      expect(variant.toString()).to.equal('chr7:141672604T>C');
+      expect(variant.toString()).to.equal('chr7:g.141672604T>C');
     });
   });
 

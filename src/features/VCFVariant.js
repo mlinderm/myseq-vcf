@@ -25,8 +25,8 @@ class VCFVariant {
     this.position = parseInt(fields[1], 10);
     const id = fields[2];
     this.id = (id === '.') ? undefined : id.split(';');
-    this.ref = fields[3]; // eslint-disable-line prefer-destructuring
-    this.alt = fields[4].split(',');
+    this.ref = fields[3].toUpperCase(); // eslint-disable-line prefer-destructuring
+    this.alt = fields[4].split(',').map(allele => (/^[ACGTN]+$/i.test(allele) ? allele.toUpperCase() : allele));
 
     const filter = fields[6];
     this.filter = (filter === '.' || filter === '') ? undefined : filter.split(';');
@@ -41,6 +41,7 @@ class VCFVariant {
       // Translate alleles, while ignoring the distinction bewteen '/' and '|'
       const stringGT = GT
         .split(/[/|]/)
+        .sort() // Reference allele should be first
         .map((allele) => {
           if (allele === '.') {
             return '.';
@@ -55,15 +56,11 @@ class VCFVariant {
   }
 
   toString(): string {
-    return `${this.contig}:${this.position}${this.ref}>${this.alt.join(',')}`;
+    return `${this.contig}:g.${this.position}${this.ref}>${this.alt.join(',')}`;
   }
 
-  toHgvs(): string {
-    if (this.alt.length > 1) {
-      throw new Error('HGVS only supported for bi-allelic variants');
-    }
-    // TODO: Handle other variant types
-    return `${this.contig}:g.${this.position}${this.ref}>${this.alt[0]}`;
+  isBiAllelic(): boolean {
+    return this.alt.length === 1;
   }
 
   isPASS(): boolean { return this.filter ? this.filter.length === 1 && this.filter[0] === 'PASS' : false; }
