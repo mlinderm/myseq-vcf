@@ -488,7 +488,7 @@ class TabixIndexedFile {
           while (view.tell() + cOffset < chunk.end.coffset) {
             uBytes += advanceToEndOfBGZFBlock(view).usize;
           }
-          console.assert(view.tell() === chunk.end.coffset);
+          console.assert((view.tell() + cOffset) === chunk.end.coffset);
 
           const uBuffer = inflateGZip(buffer, chunk.end.coffset /* Start of last block */);
           const uView = new Uint8Array(uBuffer, uOffset, uBytes);
