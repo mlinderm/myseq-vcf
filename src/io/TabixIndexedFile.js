@@ -345,13 +345,18 @@ function vcfLineInRegion(line: string, ctg: string, pos: number, end: number) {
   return true;
 }
 
+type ContigIndex = {
+  bytes: Array<number>,
+  index: ?Promise<Object>,
+};
+
 class TabixIndexedFile {
   _source: AbstractFileReader;
   _indexBuffer: Promise<ArrayBuffer>;
 
   _overlapFunction: Promise<{(line: string, ctg: string, pos: number, end: number): boolean;}>;
   _commentCharacter: Promise<string>;
-  _contigs: Promise<Map<string, Object>>;
+  _contigs: Promise<Map<string, ContigIndex>>;
 
   constructor(dataSource: AbstractFileReader, indexSource: AbstractFileReader) {
     this._source = dataSource;
@@ -416,17 +421,16 @@ class TabixIndexedFile {
 
       if (!lazyIndex.index) {
         // Lazily parse index if needed
-        return this._indexBuffer.then((buffer) => {
+        lazyIndex.index = this._indexBuffer.then((buffer) => {
           const [start, stop] = lazyIndex.bytes;
 
           const view = new jDataView(buffer, start, stop - start, true /* little endian */);
           const parser = new jBinary(view, TABIX_FORMAT);
 
-          lazyIndex.index = parser.read(TABIX_FORMAT.index);
-          return lazyIndex.index;
+          return parser.read(TABIX_FORMAT.index);
         });
       }
-      return Promise.resolve(lazyIndex.index);
+      return lazyIndex.index;
     }).then((index) => {
       const bins = reg2bins(pos, end + 1);
       let chunks = index.bins
