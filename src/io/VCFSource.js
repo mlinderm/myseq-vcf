@@ -41,8 +41,11 @@ class VCFSource {
       // 1. Look for a reference line
       const refIdx = findIndex(headerLines, line => line.startsWith('##reference='));
       if (refIdx !== -1) {
-        // Do we know this reference file?
-        const referenceFrom = Ref.referenceFromFile(headerLines[refIdx].substring(12));
+        // Do we know this reference file or string?
+        const referenceField = headerLines[refIdx].substring(12);
+        const referenceFrom =
+          Ref.referenceFromFile(referenceField) ||
+          Ref.referenceFromShortName(referenceField);
         if (referenceFrom !== undefined) {
           referenceResolver.resolve(referenceFrom);
         }

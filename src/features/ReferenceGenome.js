@@ -2,6 +2,7 @@
  * @flow
  */
 const difference = require('lodash/difference');
+const hg38SeqDict = require('./hg38SeqDict');
 
 class ReferenceGenome {
   shortName: string;
@@ -9,7 +10,7 @@ class ReferenceGenome {
   _seqDict: Object;
   _liftoverTo: Object;
 
-  constructor(shortName: string, leadingChr: boolean, seqDict: Object, liftoverTo: Object) {
+  constructor(shortName: string, leadingChr: boolean, seqDict: Object, liftoverTo: Object = {}) {
     // Not currently supported in Babel: https://github.com/babel/babel/issues/1088
     // if (new.target === ReferenceGenome) {
     //    throw new Error("Cannot construct ReferenceGenome instances directly");
@@ -27,7 +28,9 @@ class ReferenceGenome {
    * @return {string}        Normalized contig name
    */
   normalizeContig(contig: string) {
-    if (Object.prototype.hasOwnProperty.call(this._seqDict, contig)) { return contig; }
+    if (Object.prototype.hasOwnProperty.call(this._seqDict, contig)) {
+      return contig;
+    }
 
     // Translate contigs from other references to this reference
     const lifted = this._liftoverTo[contig];
@@ -315,29 +318,40 @@ class B37Reference extends ReferenceGenome {
   }
 }
 
+class Hg38Reference extends ReferenceGenome {
+  constructor() {
+    super('hg38', true, hg38SeqDict);
+  }
+}
 
 const hg19Reference = new Hg19Reference();
 const b37Reference = new B37Reference();
+const hg38Reference = new Hg38Reference();
 
 const fileNamesToRef = {
   'human_g1k_v37.fasta': b37Reference,
   'ucsc.hg19.fasta': hg19Reference,
+  'Homo_sapiens_assembly38.fasta': hg38Reference,
 };
 
 const references = [
   hg19Reference,
   b37Reference,
+  hg38Reference,
 ];
 
 const shortNameToRef = {
   hg19: hg19Reference,
   b37: b37Reference,
+  hg38: hg38Reference,
+  'GRCh38.p2': hg38Reference,
 };
 
 module.exports = {
   ReferenceGenome,
   hg19Reference,
   b37Reference,
+  hg38Reference,
   referenceFromFile(filename: string) {
     return fileNamesToRef[filename.split(/[\\/]/).pop()];
   },

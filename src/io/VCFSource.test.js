@@ -102,9 +102,19 @@ describe('VCFSource', () => {
     return expect(source._reference).to.eventually.equal(Ref.b37Reference);
   });
 
+  it('should infer hg38 reference genome from reference key in VCF header', () => {
+    const source = getTestSourceFull('./test-data/single_sample_with_reference.hg38.vcf.gz', undefined);
+    return expect(source._reference).to.eventually.equal(Ref.hg38Reference);
+  });
+
   it('should infer reference genome from contigs in VCF header', () => {
     const source = getTestSourceFull('./test-data/single_sample_with_contigs.vcf.gz', undefined);
     return expect(source._reference).to.eventually.equal(Ref.b37Reference);
+  });
+
+  it('should default to hg19 if the inferred reference is ambiguous', () => {
+    const source = getTestSourceFull('./test-data/single_sample_with_ambiguous_contigs.vcf.gz', undefined);
+    return expect(source._reference).to.eventually.equal(Ref.hg19Reference);
   });
 
   it('should generate REF/REF genotype if requested and variant not found', () => {

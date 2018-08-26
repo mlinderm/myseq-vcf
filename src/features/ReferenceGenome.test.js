@@ -1,4 +1,4 @@
-/* eslint-disable no-underscore-dangle */
+/* eslint-disable no-underscore-dangle, no-unused-expressions */
 const { expect } = require('chai');
 const Ref = require('../features/ReferenceGenome');
 
@@ -15,6 +15,10 @@ describe('ReferenceGenome', () => {
       .to.equal(Ref.b37Reference);
   });
 
+  it('should not return a reference genome if contigs are ambiguous', () => {
+    expect(Ref.referenceFromContigs(['chr1'])).to.be.undefined;
+  });
+
   it('hg19 should have unique order number for each contig', () => {
     const order = Object.values(Ref.hg19Reference._seqDict).map(contig => contig.order);
     const uniqueOrder = new Set(order);
@@ -23,6 +27,12 @@ describe('ReferenceGenome', () => {
 
   it('b37 should have unique order number for each contig', () => {
     const order = Object.values(Ref.b37Reference._seqDict).map(contig => contig.order);
+    const uniqueOrder = new Set(order);
+    expect(uniqueOrder.size).to.equal(order.length);
+  });
+
+  it('hg38 should have unique order number for each contig', () => {
+    const order = Object.values(Ref.hg38Reference._seqDict).map(contig => contig.order);
     const uniqueOrder = new Set(order);
     expect(uniqueOrder.size).to.equal(order.length);
   });
