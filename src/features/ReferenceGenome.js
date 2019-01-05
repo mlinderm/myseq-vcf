@@ -330,7 +330,9 @@ const hg38Reference = new Hg38Reference();
 
 const fileNamesToRef = {
   'human_g1k_v37.fasta': b37Reference,
+  'GRCh37.fa': b37Reference,
   'ucsc.hg19.fasta': hg19Reference,
+  'hg19.fa': hg19Reference,
   'Homo_sapiens_assembly38.fasta': hg38Reference,
 };
 

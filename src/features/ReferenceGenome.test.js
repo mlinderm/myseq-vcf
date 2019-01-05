@@ -11,8 +11,11 @@ describe('ReferenceGenome', () => {
 
   it('should map reference files to reference genomes', () => {
     expect(Ref.referenceFromFile('human_g1k_v37.fasta')).to.equal(Ref.b37Reference);
+    expect(Ref.referenceFromFile('GRCh37.fa')).to.equal(Ref.b37Reference);
     expect(Ref.referenceFromFile('file:/humgen/gsa-hpprojects/GATK/bundle/5974/b37/human_g1k_v37.fasta'))
       .to.equal(Ref.b37Reference);
+    expect(Ref.referenceFromFile('hg19.fa')).to.equal(Ref.hg19Reference);
+    expect(Ref.referenceFromFile('ucsc.hg19.fasta')).to.equal(Ref.hg19Reference);
   });
 
   it('should not return a reference genome if contigs are ambiguous', () => {
