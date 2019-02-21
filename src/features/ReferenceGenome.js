@@ -318,9 +318,37 @@ class B37Reference extends ReferenceGenome {
   }
 }
 
+const liftToHg38 = {
+  MT: 'chrM',
+  1: 'chr1',
+  2: 'chr2',
+  3: 'chr3',
+  4: 'chr4',
+  5: 'chr5',
+  6: 'chr6',
+  7: 'chr7',
+  8: 'chr8',
+  9: 'chr9',
+  10: 'chr10',
+  11: 'chr11',
+  12: 'chr12',
+  13: 'chr13',
+  14: 'chr14',
+  15: 'chr15',
+  16: 'chr16',
+  17: 'chr17',
+  18: 'chr18',
+  19: 'chr19',
+  20: 'chr20',
+  21: 'chr21',
+  22: 'chr22',
+  X: 'chrX',
+  Y: 'chrY',
+};
+
 class Hg38Reference extends ReferenceGenome {
   constructor() {
-    super('hg38', true, hg38SeqDict);
+    super('hg38', true, hg38SeqDict, liftToHg38);
   }
 }
 
