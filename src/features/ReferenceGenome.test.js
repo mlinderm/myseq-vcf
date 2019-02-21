@@ -7,6 +7,8 @@ describe('ReferenceGenome', () => {
     expect(Ref.hg19Reference.normalizeContig('chr1')).to.equal('chr1');
     expect(Ref.hg19Reference.normalizeContig('1')).to.equal('chr1');
     expect(() => { Ref.hg19Reference.normalizeContig('junk'); }).to.throw();
+    expect(Ref.hg38Reference.normalizeContig('7')).to.equal('chr7');
+    expect(Ref.hg38Reference.normalizeContig('chr7')).to.equal('chr7');
   });
 
   it('should map reference files to reference genomes', () => {
