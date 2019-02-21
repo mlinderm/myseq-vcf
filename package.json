@@ -1,6 +1,6 @@
 {
   "name": "myseq-vcf",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "main": "lib/myseq-vcf.js",
   "scripts": {
     "build": "browserify -t [ babelify ] -o dist/myseq-vcf.js --standalone myseq src/myseq-vcf.js",
