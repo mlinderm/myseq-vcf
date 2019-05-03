@@ -6,8 +6,11 @@ const hg38SeqDict = require('./hg38SeqDict');
 
 class ReferenceGenome {
   shortName: string;
+
   leadingChr: boolean;
+
   _seqDict: Object;
+
   _liftoverTo: Object;
 
   constructor(shortName: string, leadingChr: boolean, seqDict: Object, liftoverTo: Object = {}) {

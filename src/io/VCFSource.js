@@ -19,7 +19,9 @@ type Region = {
 
 class VCFSource {
   _source: TabixIndexedFile;
+
   _reference: Promise<Ref.ReferenceGenome>;
+
   _samples: Promise<Array<string>>;
 
   constructor(source: TabixIndexedFile, reference: ?Ref.ReferenceGenome) {
@@ -43,9 +45,8 @@ class VCFSource {
       if (refIdx !== -1) {
         // Do we know this reference file or string?
         const referenceField = headerLines[refIdx].substring(12);
-        const referenceFrom =
-          Ref.referenceFromFile(referenceField) ||
-          Ref.referenceFromShortName(referenceField);
+        const referenceFrom = Ref.referenceFromFile(referenceField)
+          || Ref.referenceFromShortName(referenceField);
         if (referenceFrom !== undefined) {
           referenceResolver.resolve(referenceFrom);
         }
@@ -98,9 +99,9 @@ class VCFSource {
         .then(([regions, reference]) => {
           regions.sort((aRegion, bRegion) => { // eslint-disable-line arrow-body-style
             // Sort in reference order
-            return reference.compareContig(aRegion.ctg, bRegion.ctg) ||
-              (aRegion.pos - bRegion.pos) ||
-              (aRegion.end - bRegion.end);
+            return reference.compareContig(aRegion.ctg, bRegion.ctg)
+              || (aRegion.pos - bRegion.pos)
+              || (aRegion.end - bRegion.end);
           });
           // Merge overlapping regions
           return regions.reduce((prev, curr) => {
@@ -115,7 +116,7 @@ class VCFSource {
             return prev;
           }, []);
         });
-    } else if (isString(regionOrRegions)) {
+    } if (isString(regionOrRegions)) {
       const [ctg, pos, end] = regionOrRegions.split(/[:-]/, 3);
       return this._reference
         .then(ref => ref.normalizeContig(ctg))

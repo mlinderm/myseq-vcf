@@ -6,6 +6,7 @@ const AbstractFileReader = require('./AbstractFileReader');
 
 class LocalFileReader extends AbstractFileReader {
   file: File;
+
   size: number;
 
   constructor(file: File) {

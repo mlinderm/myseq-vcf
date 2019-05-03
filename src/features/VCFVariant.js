@@ -7,11 +7,15 @@ class VCFVariant {
   isSynth: boolean;
 
   contig: string;
+
   position: number;
+
   ref: string;
+
   alt: Array<string>;
 
   id: ?Array<string>;
+
   filter: ?Array<string>;
 
   _genotypes: Map<string, string>;
@@ -45,7 +49,7 @@ class VCFVariant {
         .map((allele) => {
           if (allele === '.') {
             return '.';
-          } else if (allele === '0') {
+          } if (allele === '0') {
             return this.ref;
           }
           return this.alt[parseInt(allele, 10) - 1];
@@ -64,15 +68,16 @@ class VCFVariant {
   }
 
   isPASS(): boolean { return this.filter ? this.filter.length === 1 && this.filter[0] === 'PASS' : false; }
+
   isFILTER(): boolean { return this.filter ? this.filter.length >= 1 && this.filter[0] !== 'PASS' : false; }
 
   /**
    * If no sample is specified, return the 1st genotype
    */
   genotype(sample: string): string | void {
-    return sample === undefined ?
-      this._genotypes.values().next().value :
-      this._genotypes.get(sample);
+    return sample === undefined
+      ? this._genotypes.values().next().value
+      : this._genotypes.get(sample);
   }
 }
 

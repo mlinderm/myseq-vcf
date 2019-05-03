@@ -13,6 +13,7 @@ function bufferToArrayBufferSlice(buffer: Buffer, bytes?: number) {
 
 class LocalFileReader extends AbstractFileReader {
   handle: number;
+
   size: number;
 
   constructor(path: string) {

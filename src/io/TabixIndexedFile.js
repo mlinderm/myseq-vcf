@@ -43,13 +43,13 @@
 // which uses the Apache 2.0 license included herein.
 
 
-const { ContigNotInIndexError } = require('../util/Errors');
 const jDataView = require('jdataview');
 const jBinary = require('jbinary');
 const pako = require('pako/lib/inflate');
 const { TextDecoder } = require('text-encoding');
 const defer = require('promise-defer');
 const findLastIndex = require('lodash/findLastIndex');
+const { ContigNotInIndexError } = require('../util/Errors');
 
 const AbstractFileReader = require('./AbstractFileReader');
 
@@ -128,7 +128,9 @@ function inflateGZip(buffer: ArrayBuffer, lastBlockStart?: number): ArrayBuffer 
 }
 
 class VirtualOffset {
-  coffset: number; // Compressed offset
+  coffset: number;
+
+  // Compressed offset
   uoffset: number; // Uncompressed offset
 
   constructor(coffset: number, uoffset: number) {
@@ -143,12 +145,12 @@ class VirtualOffset {
   static fromBlob(u8: Uint8Array, offset?: number): VirtualOffset {
     const validOffset = offset || 0;
     const uoffset = u8[validOffset] + (u8[validOffset + 1] * 256);
-    const coffset = u8[validOffset + 2] +
-      (u8[validOffset + 3] * 256) +
-      (u8[validOffset + 4] * 65536) +
-      (u8[validOffset + 5] * 16777216) +
-      (u8[validOffset + 6] * 4294967296) +
-      (u8[validOffset + 7] * 1099511627776);
+    const coffset = u8[validOffset + 2]
+      + (u8[validOffset + 3] * 256)
+      + (u8[validOffset + 4] * 65536)
+      + (u8[validOffset + 5] * 16777216)
+      + (u8[validOffset + 6] * 4294967296)
+      + (u8[validOffset + 7] * 1099511627776);
     return new VirtualOffset(coffset, uoffset);
   }
 }
@@ -352,10 +354,13 @@ type ContigIndex = {
 
 class TabixIndexedFile {
   _source: AbstractFileReader;
+
   _indexBuffer: Promise<ArrayBuffer>;
 
   _overlapFunction: Promise<{(line: string, ctg: string, pos: number, end: number): boolean;}>;
+
   _commentCharacter: Promise<string>;
+
   _contigs: Promise<Map<string, ContigIndex>>;
 
   constructor(dataSource: AbstractFileReader, indexSource: AbstractFileReader) {
@@ -480,8 +485,8 @@ class TabixIndexedFile {
       return Promise.all(chunks.map((chunk) => {
         // At a minimum read at least one compressed block (which must be less than 64k)
         const cOffset = chunk.beg.coffset;
-        const cBytes = (chunk.end.coffset - chunk.beg.coffset) +
-          (chunk.end.uoffset > 0) ? 65536 : 0;
+        const cBytes = (chunk.end.coffset - chunk.beg.coffset)
+          + (chunk.end.uoffset > 0) ? 65536 : 0;
 
         return this._source.bytes(cOffset, cBytes).then((buffer) => {
           const uOffset = chunk.beg.uoffset; // Start decoding at chunk's uncompressed offset
