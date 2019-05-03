@@ -4,7 +4,7 @@
   "main": "lib/myseq-vcf.js",
   "scripts": {
     "build": "browserify -t [ babelify ] -o dist/myseq-vcf.js --standalone myseq src/myseq-vcf.js",
-    "test": "mocha --require babel-core/register src/**/*.test.js",
+    "test": "mocha --require @babel/register src/**/*.test.js",
     "pretest:browser": "npm run build",
     "test:browser": "karma start karma.conf.js",
     "lint": "eslint .",
@@ -29,13 +29,13 @@
     "./lib/io/FileReaders.js": "./lib/io/FileReaders-browser.js"
   },
   "devDependencies": {
+    "@babel/cli": "^7.4.4",
     "@babel/core": "^7.4.4",
-    "babel-cli": "^6.26.0",
-    "babel-core": "^6.26.3",
+    "@babel/plugin-proposal-class-properties": "^7.4.4",
+    "@babel/preset-env": "^7.4.4",
+    "@babel/preset-flow": "^7.0.0",
+    "@babel/register": "^7.4.4",
     "babel-eslint": "^10.0.1",
-    "babel-plugin-transform-class-properties": "^6.24.1",
-    "babel-preset-env": "^1.7.0",
-    "babel-preset-flow": "^6.23.0",
     "babelify": "^10.0.0",
     "browserify": "^16.2.3",
     "chai": "^4.2.0",
