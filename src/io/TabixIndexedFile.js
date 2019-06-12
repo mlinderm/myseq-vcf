@@ -46,7 +46,6 @@
 const jDataView = require('jdataview');
 const jBinary = require('jbinary');
 const pako = require('pako/lib/inflate');
-const { TextDecoder } = require('text-encoding');
 const defer = require('promise-defer');
 const findLastIndex = require('lodash/findLastIndex');
 const { ContigNotInIndexError } = require('../util/Errors');
