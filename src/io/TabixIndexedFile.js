@@ -486,7 +486,7 @@ class TabixIndexedFile {
         // At a minimum read at least one compressed block (which must be less than 64k)
         const cOffset = chunk.beg.coffset;
         const cBytes = (chunk.end.coffset - chunk.beg.coffset)
-          + (chunk.end.uoffset > 0) ? 65536 : 0;
+          + ((chunk.end.uoffset > 0) ? 65536 : 0);
 
         return this._source.bytes(cOffset, cBytes).then((buffer) => {
           const uOffset = chunk.beg.uoffset; // Start decoding at chunk's uncompressed offset
