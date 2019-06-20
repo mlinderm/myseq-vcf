@@ -18,6 +18,7 @@ describe('ReferenceGenome', () => {
       .to.equal(Ref.b37Reference);
     expect(Ref.referenceFromFile('hg19.fa')).to.equal(Ref.hg19Reference);
     expect(Ref.referenceFromFile('ucsc.hg19.fasta')).to.equal(Ref.hg19Reference);
+    expect(Ref.referenceFromFile('ftp://ftp.1000genomes.ebi.ac.uk//vol1/ftp/technical/reference/phase2_reference_assembly_sequence/hs37d5.fa.gz')).to.equal(Ref.b37Reference);
   });
 
   it('should not return a reference genome if contigs are ambiguous', () => {

@@ -361,10 +361,29 @@ const hg38Reference = new Hg38Reference();
 
 const fileNamesToRef = {
   'human_g1k_v37.fasta': b37Reference,
+  'human_g1k_v37.fasta.gz': b37Reference,
+  'human_g1k_v37.fa': b37Reference,
+  'human_g1k_v37.fa.gz': b37Reference,
+  'GRCh37.fasta': b37Reference,
+  'GRCh37.fasta.gz': b37Reference,
   'GRCh37.fa': b37Reference,
+  'GRCh37.fa.gz': b37Reference,
   'ucsc.hg19.fasta': hg19Reference,
+  'ucsc.hg19.fasta.gz': hg19Reference,
+  'ucsc.hg19.fa': hg19Reference,
+  'ucsc.hg19.fa.gz': hg19Reference,
+  'hg19.fasta': hg19Reference,
+  'hg19.fasta.gz': hg19Reference,
   'hg19.fa': hg19Reference,
+  'hg19.fa.gz': hg19Reference,
   'Homo_sapiens_assembly38.fasta': hg38Reference,
+  'Homo_sapiens_assembly38.fasta.gz': hg38Reference,
+  'Homo_sapiens_assembly38.fa': hg38Reference,
+  'Homo_sapiens_assembly38.fa.gz': hg38Reference,
+  'hs37d5.fasta': b37Reference,
+  'hs37d5.fasta.gz': b37Reference,
+  'hs37d5.fa': b37Reference,
+  'hs37d5.fa.gz': b37Reference,
 };
 
 const references = [
