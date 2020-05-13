@@ -46,7 +46,7 @@ class RemoteFileReader extends AbstractFileReader {
   }
 
   bytes(start: number = 0, length?: number): Promise<ArrayBuffer> {
-    const options = Object.assign({}, this.url, { method: 'GET' });
+    const options = { ...this.url, method: 'GET' };
 
     if (start !== 0 || length !== undefined) {
       // Requesting only a portion of the file

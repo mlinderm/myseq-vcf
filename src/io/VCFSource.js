@@ -41,7 +41,7 @@ class VCFSource {
       }
 
       // 1. Look for a reference line
-      const refIdx = findIndex(headerLines, line => line.startsWith('##reference='));
+      const refIdx = findIndex(headerLines, (line) => line.startsWith('##reference='));
       if (refIdx !== -1) {
         // Do we know this reference file or string?
         const referenceField = headerLines[refIdx].substring(12);
@@ -54,10 +54,10 @@ class VCFSource {
 
       // 2. Parse contig lines to infer reference
       const contigs = headerLines
-        .filter(line => line.startsWith('##contig='))
-        .map(line => line.match(/ID=([^,>]+)/))
-        .filter(match => match && match.length === 2)
-        .map(match => match[1]);
+        .filter((line) => line.startsWith('##contig='))
+        .map((line) => line.match(/ID=([^,>]+)/))
+        .filter((match) => match && match.length === 2)
+        .map((match) => match[1]);
       if (contigs.length > 0) {
         const referenceFrom = Ref.referenceFromContigs(contigs);
         if (referenceFrom !== undefined) {
@@ -94,8 +94,8 @@ class VCFSource {
    */
   normalizeRegions(regionOrRegions: string | Array<string>): Promise<Array<Region> | Region> {
     if (Array.isArray(regionOrRegions)) {
-      return Promise.all(regionOrRegions.map(region => this.normalizeRegions(region)))
-        .then(regions => Promise.all([regions, this._reference]))
+      return Promise.all(regionOrRegions.map((region) => this.normalizeRegions(region)))
+        .then((regions) => Promise.all([regions, this._reference]))
         .then(([regions, reference]) => {
           regions.sort((aRegion, bRegion) => { // eslint-disable-line arrow-body-style
             // Sort in reference order
@@ -119,8 +119,8 @@ class VCFSource {
     } if (isString(regionOrRegions)) {
       const [ctg, pos, end] = regionOrRegions.split(/[:-]/, 3);
       return this._reference
-        .then(ref => ref.normalizeContig(ctg))
-        .then(normCtg => ({ ctg: normCtg, pos: parseInt(pos, 10), end: parseInt(end || pos, 10) }));
+        .then((ref) => ref.normalizeContig(ctg))
+        .then((normCtg) => ({ ctg: normCtg, pos: parseInt(pos, 10), end: parseInt(end || pos, 10) }));
     }
     throw new Error('Invalid region(s)');
   }
@@ -134,12 +134,12 @@ class VCFSource {
    */
   variants(ctg: string, pos: number, end: number): Promise<Array<VCFVariant>> {
     const queryResults = this._reference
-      .then(ref => ref.normalizeContig(ctg))
-      .then(normalizedCtg => this._source.records(normalizedCtg, pos, end));
+      .then((ref) => ref.normalizeContig(ctg))
+      .then((normalizedCtg) => this._source.records(normalizedCtg, pos, end));
 
     return Promise.all([queryResults, this._samples])
       .then(
-        ([records, samples]) => records.map(record => new VCFVariant(record, samples)),
+        ([records, samples]) => records.map((record) => new VCFVariant(record, samples)),
         (err) => {
           if (err instanceof ContigNotInIndexError) { return []; }
           throw err;
@@ -176,7 +176,7 @@ class VCFSource {
       // Filter for exact position and allele match, if none found and assumeRefRef
       // is true, synthesize a variant with a Ref/Ref genotype
       const foundVariant = variants
-        .filter(variant => variant.ref === ref && variant.alt.indexOf(alt) !== -1)
+        .filter((variant) => variant.ref === ref && variant.alt.indexOf(alt) !== -1)
         .shift();
       if (!foundVariant && assumeRefRef) {
         return this._synthVariant(ctg, pos, ref, alt);

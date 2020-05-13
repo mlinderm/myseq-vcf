@@ -30,7 +30,7 @@ class VCFVariant {
     const id = fields[2];
     this.id = (id === '.') ? undefined : id.split(';');
     this.ref = fields[3].toUpperCase(); // eslint-disable-line prefer-destructuring
-    this.alt = fields[4].split(',').map(allele => (/^[ACGTN]+$/i.test(allele) ? allele.toUpperCase() : allele));
+    this.alt = fields[4].split(',').map((allele) => (/^[ACGTN]+$/i.test(allele) ? allele.toUpperCase() : allele));
 
     const filter = fields[6];
     this.filter = (filter === '.' || filter === '') ? undefined : filter.split(';');

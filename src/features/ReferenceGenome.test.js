@@ -1,6 +1,6 @@
 /* eslint-disable no-underscore-dangle, no-unused-expressions */
 const { expect } = require('chai');
-const Ref = require('../features/ReferenceGenome');
+const Ref = require('./ReferenceGenome');
 
 describe('ReferenceGenome', () => {
   it('should normalize contig names', () => {
@@ -26,19 +26,19 @@ describe('ReferenceGenome', () => {
   });
 
   it('hg19 should have unique order number for each contig', () => {
-    const order = Object.values(Ref.hg19Reference._seqDict).map(contig => contig.order);
+    const order = Object.values(Ref.hg19Reference._seqDict).map((contig) => contig.order);
     const uniqueOrder = new Set(order);
     expect(uniqueOrder.size).to.equal(order.length);
   });
 
   it('b37 should have unique order number for each contig', () => {
-    const order = Object.values(Ref.b37Reference._seqDict).map(contig => contig.order);
+    const order = Object.values(Ref.b37Reference._seqDict).map((contig) => contig.order);
     const uniqueOrder = new Set(order);
     expect(uniqueOrder.size).to.equal(order.length);
   });
 
   it('hg38 should have unique order number for each contig', () => {
-    const order = Object.values(Ref.hg38Reference._seqDict).map(contig => contig.order);
+    const order = Object.values(Ref.hg38Reference._seqDict).map((contig) => contig.order);
     const uniqueOrder = new Set(order);
     expect(uniqueOrder.size).to.equal(order.length);
   });

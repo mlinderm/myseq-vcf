@@ -62,7 +62,7 @@ class RemoteFileReader extends AbstractFileReader {
     // an error while setting options to bypass the cache.
     return new Promise((resolve, reject) => {
       const wrappedFetch = (retry, addlOptions = {}) => {
-        fetch(this.url, Object.assign({}, options, addlOptions))
+        fetch(this.url, { ...options, ...addlOptions })
           .then((response) => {
             if (response.ok) {
               resolve(response.arrayBuffer());
@@ -75,7 +75,7 @@ class RemoteFileReader extends AbstractFileReader {
             if (retry > 0) {
               wrappedFetch(
                 retry - 1,
-                Object.assign({}, addlOptions, { cache: 'reload' }),
+                { ...addlOptions, cache: 'reload' },
               );
             } else {
               reject(error);

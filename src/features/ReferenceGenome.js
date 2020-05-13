@@ -408,7 +408,8 @@ module.exports = {
     return fileNamesToRef[filename.split(/[\\/]/).pop()];
   },
   referenceFromContigs(contigs: Array<string>): ReferenceGenome {
-    const possibleRefs = references.filter(ref => difference(contigs, ref.contigs()).length === 0);
+    const possibleRefs = references
+      .filter((ref) => difference(contigs, ref.contigs()).length === 0);
     // Only return reference if we generate a unique match
     return (possibleRefs.length === 1) ? possibleRefs[0] : undefined;
   },

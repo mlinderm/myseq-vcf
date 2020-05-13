@@ -104,7 +104,7 @@ function inflateConcatenatedGZip(buffer: ArrayBuffer, lastBlockStart?: number): 
 }
 
 function concatArrayBuffers(buffers: ArrayBuffer[]): ArrayBuffer {
-  const totalBytes = buffers.map(b => b.byteLength).reduce((a, b) => a + b, 0);
+  const totalBytes = buffers.map((b) => b.byteLength).reduce((a, b) => a + b, 0);
   const output = new Uint8Array(totalBytes);
 
   let position = 0;
@@ -123,7 +123,7 @@ function concatArrayBuffers(buffers: ArrayBuffer[]): ArrayBuffer {
  * block.
  */
 function inflateGZip(buffer: ArrayBuffer, lastBlockStart?: number): ArrayBuffer {
-  return concatArrayBuffers(inflateConcatenatedGZip(buffer, lastBlockStart).map(x => x.buffer));
+  return concatArrayBuffers(inflateConcatenatedGZip(buffer, lastBlockStart).map((x) => x.buffer));
 }
 
 class VirtualOffset {
@@ -189,7 +189,7 @@ const TABIX_FORMAT = {
     meta: 'int32',
     skip: 'int32',
     l_nm: 'int32',
-    names: ['string', context => context.l_nm],
+    names: ['string', (context) => context.l_nm],
   },
 
   chunk: {
@@ -208,19 +208,19 @@ const TABIX_FORMAT = {
   bin: {
     bin: 'uint32',
     n_chunk: 'int32',
-    chunks: ['blob', context => 16 * context.n_chunk],
+    chunks: ['blob', (context) => 16 * context.n_chunk],
   },
 
   index: {
     n_bin: 'int32',
-    bins: ['array', 'bin', context => context.n_bin],
+    bins: ['array', 'bin', (context) => context.n_bin],
     n_intv: 'int32',
-    intervals: ['blob', context => 8 * context.n_intv],
+    intervals: ['blob', (context) => 8 * context.n_intv],
   },
 
   tabix: {
     head: 'header',
-    indexseq: ['array', 'index', context => context.head.n_ref],
+    indexseq: ['array', 'index', (context) => context.head.n_ref],
   },
 
 };
@@ -438,8 +438,8 @@ class TabixIndexedFile {
     }).then((index) => {
       const bins = reg2bins(pos, end + 1);
       let chunks = index.bins
-        .filter(b => bins.indexOf(b.bin) >= 0)
-        .map(b => readChunks(b.chunks))
+        .filter((b) => bins.indexOf(b.bin) >= 0)
+        .map((b) => readChunks(b.chunks))
         .reduce((acc, cur) => acc.concat(cur), []);
 
       // Apply linear index and other optimizations
@@ -461,7 +461,7 @@ class TabixIndexedFile {
         const decoder = new TextDecoder('utf-8'); // VCF 4.3 allows UTF characters
         const lines = decoder.decode(uView).split(/\r?\n/); // VCF 4.3 allows LF or CRLF
 
-        const last = findLastIndex(lines, line => line.startsWith(comment));
+        const last = findLastIndex(lines, (line) => line.startsWith(comment));
         if (last === (lines.length - 1)) {
           throw new Error('Headers larger than single bgzip block not yet supported');
         }
@@ -496,15 +496,15 @@ class TabixIndexedFile {
           while (view.tell() + cOffset < chunk.end.coffset) {
             uBytes += advanceToEndOfBGZFBlock(view).usize;
           }
-          console.assert((view.tell() + cOffset) === chunk.end.coffset);
+          console.assert((view.tell() + cOffset) === chunk.end.coffset); // eslint-disable-line
 
           const uBuffer = inflateGZip(buffer, chunk.end.coffset /* Start of last block */);
           const uView = new Uint8Array(uBuffer, uOffset, uBytes);
 
           return decoder.decode(uView).split(/\r?\n/) // VCF 4.3 allows LF or CRLF
-            .filter(line => line.length > 0 && overlapFunction(line, ctg, pos, end));
+            .filter((line) => line.length > 0 && overlapFunction(line, ctg, pos, end));
         });
-      })).then(lines => lines.reduce((acc, cur) => acc.concat(cur), []));
+      })).then((lines) => lines.reduce((acc, cur) => acc.concat(cur), []));
     });
   }
 }
