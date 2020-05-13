@@ -10,6 +10,9 @@
     "lint": "eslint .",
     "prepare": "babel src/ -d lib --ignore test.js"
   },
+  "engines": {
+    "node": ">=12.0.0"
+  },
   "files": [
     "lib",
     "dist"
@@ -60,8 +63,7 @@
     "jdataview": "^2.5.0",
     "lodash": "^4.17.11",
     "pako": "^1.0.10",
-    "promise-defer": "^1.0.0",
-    "text-encoding": "^0.7.0"
+    "promise-defer": "^1.0.0"
   },
   "repository": {
     "type": "git",

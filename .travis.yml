@@ -1,6 +1,6 @@
 language: node_js
 node_js:
-  - "lts/carbon"
+  - "12"
 dist: trusty
 sudo: false
 addons:
